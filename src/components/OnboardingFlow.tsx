@@ -90,6 +90,7 @@ const generateStepsFromGoal = (goal: string): OnboardingStep[] => {
 
 export function OnboardingFlow() {
   const [showWelcome, setShowWelcome] = useState(true);
+  const [showSidebar, setShowSidebar] = useState(false);
   const [userGoal, setUserGoal] = useState("");
   const [steps, setSteps] = useState<OnboardingStep[]>([]);
   const [currentStep, setCurrentStep] = useState(0);
@@ -130,26 +131,26 @@ export function OnboardingFlow() {
 
   if (isComplete) {
     return (
-      <div className="min-h-screen bg-background flex items-center justify-center p-6">
+      <div className="min-h-screen bg-background flex items-center justify-center p-4 lg:p-6">
         <div className="max-w-2xl mx-auto text-center space-y-6">
           <div className="space-y-4">
-            <div className="mx-auto w-20 h-20 bg-gradient-primary rounded-full flex items-center justify-center shadow-glow">
-              <CheckCircle className="w-10 h-10 text-primary-foreground" />
+            <div className="mx-auto w-16 h-16 lg:w-20 lg:h-20 bg-gradient-primary rounded-full flex items-center justify-center shadow-glow">
+              <CheckCircle className="w-8 h-8 lg:w-10 lg:h-10 text-primary-foreground" />
             </div>
-            <h1 className="text-3xl font-bold bg-gradient-primary bg-clip-text text-transparent">
+            <h1 className="text-2xl lg:text-3xl font-bold bg-gradient-primary bg-clip-text text-transparent">
               Congratulations! 🎉
             </h1>
-            <p className="text-xl text-muted-foreground">
+            <p className="text-lg lg:text-xl text-muted-foreground px-4">
               You've successfully completed the PayFlow setup
             </p>
           </div>
           
-          <div className="p-6 bg-gradient-secondary rounded-lg border">
-            <h2 className="text-lg font-semibold mb-2">Your Goal: "{userGoal}"</h2>
-            <p className="text-muted-foreground mb-4">
+          <div className="p-4 lg:p-6 bg-gradient-secondary rounded-lg border">
+            <h2 className="text-base lg:text-lg font-semibold mb-2">Your Goal: "{userGoal}"</h2>
+            <p className="text-sm lg:text-base text-muted-foreground mb-4">
               You're now ready to accept payments! Your integration is live in test mode.
             </p>
-            <div className="flex gap-3 justify-center">
+            <div className="flex flex-col sm:flex-row gap-3 justify-center">
               <Button className="bg-gradient-primary hover:shadow-elevated">
                 Go to Dashboard
               </Button>
@@ -171,29 +172,70 @@ export function OnboardingFlow() {
       />
       
       {!showWelcome && (
-        <div className="min-h-screen bg-background flex">
-          <OnboardingSidebar 
-            steps={steps}
-            currentStep={currentStep}
-          />
-          
-          <div className="flex-1 p-6 overflow-y-auto">
-            <div className="max-w-3xl mx-auto space-y-6">
-              <div className="space-y-2">
-                <h1 className="text-2xl font-bold">Setting up: {userGoal}</h1>
-                <p className="text-muted-foreground">
-                  Complete each step below to get your payment system ready
-                </p>
+        <div className="min-h-screen bg-background">
+          {/* Mobile Header */}
+          <div className="lg:hidden border-b border-border p-4 flex items-center justify-between sticky top-0 bg-background/95 backdrop-blur-sm z-40">
+            <div>
+              <h1 className="text-lg font-bold">Setting up: {userGoal}</h1>
+              <p className="text-sm text-muted-foreground">
+                Step {currentStep + 1} of {steps.length}
+              </p>
+            </div>
+            <button
+              onClick={() => setShowSidebar(!showSidebar)}
+              className="p-2 hover:bg-accent rounded-md transition-colors"
+            >
+              <div className="w-5 h-5 flex flex-col justify-center space-y-1">
+                <div className="w-full h-0.5 bg-foreground rounded"></div>
+                <div className="w-full h-0.5 bg-foreground rounded"></div>
+                <div className="w-full h-0.5 bg-foreground rounded"></div>
               </div>
-              
-              {steps.map((step, index) => (
-                <StepCard
-                  key={step.id}
-                  step={step}
-                  onComplete={handleStepComplete}
-                  isActive={index === currentStep}
-                />
-              ))}
+            </button>
+          </div>
+
+          <div className="lg:flex">
+            {/* Mobile Sidebar Overlay */}
+            {showSidebar && (
+              <div 
+                className="fixed inset-0 bg-black/50 z-40 lg:hidden"
+                onClick={() => setShowSidebar(false)}
+              />
+            )}
+            
+            {/* Sidebar */}
+            <div className={`
+              fixed lg:relative lg:translate-x-0 transition-transform duration-300 z-50 lg:z-auto
+              ${showSidebar ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'}
+            `}>
+              <OnboardingSidebar 
+                steps={steps}
+                currentStep={currentStep}
+                onClose={() => setShowSidebar(false)}
+              />
+            </div>
+            
+            {/* Main Content */}
+            <div className="flex-1 overflow-y-auto">
+              <div className="p-4 lg:p-6">
+                <div className="max-w-3xl mx-auto space-y-4 lg:space-y-6">
+                  {/* Desktop Header */}
+                  <div className="hidden lg:block space-y-2">
+                    <h1 className="text-2xl font-bold">Setting up: {userGoal}</h1>
+                    <p className="text-muted-foreground">
+                      Complete each step below to get your payment system ready
+                    </p>
+                  </div>
+                  
+                  {steps.map((step, index) => (
+                    <StepCard
+                      key={step.id}
+                      step={step}
+                      onComplete={handleStepComplete}
+                      isActive={index === currentStep}
+                    />
+                  ))}
+                </div>
+              </div>
             </div>
           </div>
         </div>
