@@ -1,4 +1,4 @@
-import { CheckCircle, Circle, Clock } from "lucide-react";
+import { CheckCircle, Circle, Clock, X } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 export interface OnboardingStep {
@@ -28,10 +28,7 @@ export function OnboardingSidebar({ steps, currentStep, onClose }: OnboardingSid
             onClick={onClose}
             className="p-1 hover:bg-accent rounded-md transition-colors"
           >
-            <div className="w-4 h-4 relative">
-              <div className="absolute inset-0 w-full h-0.5 bg-foreground rounded rotate-45 top-1/2 -translate-y-1/2"></div>
-              <div className="absolute inset-0 w-full h-0.5 bg-foreground rounded -rotate-45 top-1/2 -translate-y-1/2"></div>
-            </div>
+            <X className="w-4 h-4" />
           </button>
         </div>
       )}
